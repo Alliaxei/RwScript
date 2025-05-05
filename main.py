@@ -10,8 +10,7 @@ async def main():
         logger.info(f"No trains found, exiting...")
         return
 
-    for train in trains:
-        print(train)
+    logger.info(f"starting sending message to Telegram...")
     await send_message(trains)
 
 
