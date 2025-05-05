@@ -7,30 +7,17 @@ on:
 jobs:
   send-telegram-message:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-          
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgbm-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm-dev libxkbcommon-dev libxcomposite-dev libxdamage-dev libxrandr-dev libgtk-3-0 libasound2
-          
-      - name: Install Python Dependencies
-        run: |
-          pip install -r requirements.txt
-          python -m playwright install --with-deps chromium
-          
-      - name: Verify Playwright Installation
-        run: |
-          python -m playwright --version
-          ls -la ~/.cache/ms-playwright/
-          
+      - name: Install dependencies
+        run:  |
+         pip install -r requirements.txt
+         playwright install-deps
+         playwright install chromium
       - name: Run Telegram Notifier
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
