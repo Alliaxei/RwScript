@@ -3,7 +3,7 @@ from playwright.async_api import async_playwright
 from config.logger_config import logger
 from config.settings import settings
 
-TARGET_TIME = "19.14"
+TARGET_TIME = "19:14"
 
 
 async def parse_trains():
