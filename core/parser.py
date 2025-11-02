@@ -1,9 +1,13 @@
 from playwright.async_api import async_playwright
-from config.settings import settings
+
 from config.logger_config import logger
+from config.settings import settings
+
+TARGET_TIME = "19.14"
+
 
 async def parse_trains():
-    """ Parce trains from RW.BY """
+    """Parce trains from RW.BY"""
     logger.info("Starting parsing trains")
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -26,17 +30,30 @@ async def parse_trains():
             for row in all_rows[1:]:
                 btn_wrap = await row.query_selector(".sch-table__btn-wrap")
                 train_route = await row.query_selector(".train-route")
-                train_route_text = await train_route.inner_text() if train_route else None
-
                 train_from_time = await row.query_selector(".train-from-time")
-                train_from_time_text = await train_from_time.inner_text() if train_from_time else None
 
-                train = {
-                    "has_tickets": await btn_wrap.is_visible() if btn_wrap else False,
-                    "train_route": train_route_text.replace('\xa0', ' '),
-                    "train_from_time": train_from_time_text,
-                }
-                trains.append(train)
+                train_from_time_text = (
+                    await train_from_time.inner_text() if train_from_time else None
+                )
+
+                if train_from_time_text and train_from_time_text == TARGET_TIME:
+                    train_route_text = (
+                        await train_route.inner_text() if train_route else None
+                    )
+
+                    train = {
+                        "has_tickets": (
+                            await btn_wrap.is_visible() if btn_wrap else False
+                        ),
+                        "train_route": (
+                            train_route_text.replace("\xa0", " ")
+                            if train_route_text
+                            else None
+                        ),
+                        "train_from_time": train_from_time_text,
+                    }
+                    trains.append(train)
+                    logger.info(f"Found matching train: {train_route_text}")
 
             return trains
         except Exception as e:
