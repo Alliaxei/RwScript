@@ -23,6 +23,6 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          RWBY_URL: ${{ settings.RWBY_URL }}
-          RWBY_TIMEOUT: ${{ settings.RWBY_TIMEOUT }}
+          RWBY_URL: ${{ secrets.RWBY_URL }}
+          RWBY_TIMEOUT: ${{ secrets.RWBY_TIMEOUT }}
         run: python main.py
