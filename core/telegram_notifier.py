@@ -4,7 +4,7 @@ from config.logger_config import logger
 from config.settings import settings
 
 
-async def send_message(trains_data) -> bool:
+async def send_message(trains_data) -> bool | None:
     if not settings.TELEGRAM_TOKEN:
         logger.error("Telegram token not set")
         return False
@@ -12,6 +12,8 @@ async def send_message(trains_data) -> bool:
     if not settings.TELEGRAM_CHAT_ID:
         logger.error("Telegram chat id not set")
         return False
+    if not trains_data:
+        return None
     formatted_message = format_trains_markdown(trains_data)
 
     url = f"https://api.telegram.org/bot{settings.TELEGRAM_TOKEN}/sendMessage"
@@ -45,8 +47,6 @@ def format_trains_markdown(trains_data: list) -> str:
     :param trains_data: Список словарей с данными о поездах
     :return: Отформатированная строка
     """
-    if not trains_data:
-        return escape_markdown("❌ Нет билетов")
 
     message = [
         "*🚂 Расписание поездов*",
